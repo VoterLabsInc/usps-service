@@ -3,5 +3,8 @@ from distutils.core import setup
 setup(
     name='USPSService',
     version='0.1',
-    packages=['usps-service']
+    author='Briar Harrison',
+    author_email='briar.harrison@voterlabs.com',
+    url='voterlabs.com',
+    packages=['uspsservice']
 )
