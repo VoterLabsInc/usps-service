@@ -1,8 +1,12 @@
-from flask_testing import TestCase
+from unittest import TestCase
 
 from usps_service.address_standardizer import AddressStandardizer
 
 class TestUSPS(TestCase):
+    """
+    Test the USPS Address Standardizer
+    run using python -m nose path/to/test_address_standardization.py
+    """
     def setUp(self):
         self.standardizer = AddressStandardizer("XXXXX")
 
@@ -14,15 +18,16 @@ class TestUSPS(TestCase):
         """
 
         not_found_response = '<AddressValidateResponse><Address ID="0"><Error><Number>-2147219401</Number><Source>clsAMS</Source><Description>Address Not Found.  </Description><HelpFile/><HelpContext/></Error></Address></AddressValidateResponse>'
-        not_found_result = ('Address Not Found.', 404)
+        not_found_result = ({'error': 'Address Not Found.'}, 404)
         self.assertEquals(self.standardizer._unpack_response(not_found_response),
                           not_found_result)
 
         found_response = '<AddressValidateResponse><Address ID="0"><Address2>19 WILLOW DR</Address2><City>COLUMBIA</City><State>SC</State><Zip5>29201</Zip5><Zip4>2008</Zip4></Address></AddressValidateResponse>'
-        found_result = {'city': 'COLUMBIA',
+        found_result = ({'city': 'COLUMBIA',
                         'state': 'SC',
                         'street': '19 WILLOW DR',
                         'suite': None,
-                        'zip': '29201-2008'}
+                        'zip5': '29201',
+                        'zip4': '2008'}, 200)
         self.assertEquals(self.standardizer._unpack_response(found_response),
                           found_result)
