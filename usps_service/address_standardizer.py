@@ -1,4 +1,5 @@
 import xmltodict
+import requests
 
 
 class AddressStandardizer():
@@ -65,12 +66,12 @@ class AddressStandardizer():
         query = f'''<AddressValidateRequest USERID="{user_id}">
                     <Address ID="0">
                         <FirmName/>
-                        <Address1>{address.suite}</Address1>
-                        <Address2>{address.street}</Address2>
-                        <City>{address.city}</City>
-                        <State>{address.state}</State>
-                        <Zip5>{address.zip5}</Zip5>
-                        <Zip4>{address.zip4}</Zip4>
+                        <Address1>{address['suite']}</Address1>
+                        <Address2>{address['street']}</Address2>
+                        <City>{address['city']}</City>
+                        <State>{address['state']}</State>
+                        <Zip5>{address['zip5']}</Zip5>
+                        <Zip4>{address['zip4']}</Zip4>
                     </Address>
                 </AddressValidateRequest>'''
         query = query.split('\n')
