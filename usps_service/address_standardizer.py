@@ -81,6 +81,7 @@ class AddressStandardizer():
         return query
 
     def _unpack_response(self, response: str):
+        print(response)
         """
         Parse the xml response returned by the USPS service.
 
