@@ -48,22 +48,21 @@ class AddressStandardizer():
             'zip5': zip5,
             'zip4': zip4 }
 
-        query = self._build_query(address)
-
         url = ('https://secure.shippingapis.com/' +
-               'ShippingAPI.dll?API=Verify&XML=' + query)
+               'ShippingAPI.dll?API=Verify&XML=' + 
+               self._build_query(address, self.user_id))
 
         response = requests.post(url).content.decode("utf-8")
         return self._unpack_response(response)
 
-    def _build_query(self, address: dict):
+    def _build_query(self, address: dict, user_id: str):
         """
         build an xml query in the required format for the USPS service from
         the address.
         :param address: the address to build into a query
         :return string: the xml query to submit to USPS service.
         """
-        query = f'''<AddressValidateRequest USERID="{self.user_id}">
+        query = f'''<AddressValidateRequest USERID="{user_id}">
                     <Address ID="0">
                         <FirmName/>
                         <Address1>{address.suite}</Address1>
