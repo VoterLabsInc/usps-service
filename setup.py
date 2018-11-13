@@ -5,6 +5,7 @@ setup(
     version='0.1',
     packages=['usps_service'],
     install_requires=[
-    	'xmltodict'
+    	'xmltodict',
+    	'requests'
     ]
 )
