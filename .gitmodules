@@ -1,0 +1,6 @@
+[submodule "scripts/--force"]
+	path = scripts/--force
+	url = git@github.com:VoterLabsInc/bash-utils.git
+[submodule "scripts/bash-utils"]
+	path = scripts/bash-utils
+	url = git@github.com:VoterLabsInc/bash-utils.git

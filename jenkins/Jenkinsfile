@@ -1,0 +1,68 @@
+pipeline {
+  agent any
+
+  environment {
+    TAG_NAME = 'usps-service-build:' + "${env.BRANCH_NAME.replaceAll('/', '-')}"
+    TEST_TAG_NAME = 'usps-service-build:' + "${env.BRANCH_NAME.replaceAll('/', '-')}" + '-test'
+  }
+
+  stages {
+    stage('Prebuild') {
+      steps {
+        checkout scm
+        // Initialize bash-utils submodule
+        withCredentials([file(credentialsId: 'read-only-bash-utils',
+                    variable: 'BASH_UTILS_KEY')]){
+          sh """
+             cat \"$BASH_UTILS_KEY\" > bash_utils.key
+             chmod 0600 bash_utils.key
+             ssh-agent bash -c \
+             'ssh-add bash_utils.key; \
+              git submodule update --init --recursive scripts/bash-utils'
+             """
+          }
+        // create python virtualenv or use a python docker container
+        sh """
+           bash jenkins/prebuild.sh
+           """
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Testing'
+        sh """
+           bash jenkins/test.sh
+           """
+      }
+    }
+  }
+
+  post {
+    failure {
+      script {
+        def BLAME = sh (
+          returnStdout: true,
+          script: 'bash scripts/bash-utils/blame.sh'
+        )
+        slackSend(color: '#FF0000',
+              channel: 'jenkins',
+              message: "Build failed on `usps-service` `${env.BRANCH_NAME}`, blaming ${BLAME}")
+      }
+    }
+
+    fixed {
+      script {
+        def BLAME = sh (
+          returnStdout: true,
+          script: 'bash scripts/bash-utils/blame.sh'
+        )
+        slackSend(color: '#00FF00',
+              channel: 'jenkins',
+              message: "Build fixed on `usps-service` `${env.BRANCH_NAME}`, thanks ${BLAME}")
+      }
+    }
+
+  }
+
+}
