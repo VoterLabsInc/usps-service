@@ -1,3 +1,7 @@
+import xmltodict
+import requests
+
+
 class AddressStandardizer():
     """
     AddressStandardizer uses the services provided by the United States
@@ -47,12 +51,12 @@ class AddressStandardizer():
 
         url = ('https://secure.shippingapis.com/' +
                'ShippingAPI.dll?API=Verify&XML=' + 
-               self._build_query(self, address, self.user_id))
+               self._build_query(address, self.user_id))
 
         response = requests.post(url).content.decode("utf-8")
-        return self._unpack_response(self, response)
+        return self._unpack_response(response)
 
-    def _build_query(self, address: dict):
+    def _build_query(self, address: dict, user_id: str):
         """
         build an xml query in the required format for the USPS service from
         the address.
@@ -62,12 +66,12 @@ class AddressStandardizer():
         query = f'''<AddressValidateRequest USERID="{user_id}">
                     <Address ID="0">
                         <FirmName/>
-                        <Address1>{address.suite}</Address1>
-                        <Address2>{address.street}</Address2>
-                        <City>{address.city}</City>
-                        <State>{address.state}</State>
-                        <Zip5>{address.zip5}</Zip5>
-                        <Zip4>{address.zip4}</Zip4>
+                        <Address1>{address['suite']}</Address1>
+                        <Address2>{address['street']}</Address2>
+                        <City>{address['city']}</City>
+                        <State>{address['state']}</State>
+                        <Zip5>{address['zip5']}</Zip5>
+                        <Zip4>{address['zip4']}</Zip4>
                     </Address>
                 </AddressValidateRequest>'''
         query = query.split('\n')
@@ -76,7 +80,7 @@ class AddressStandardizer():
 
         return query
 
-    def _unpack_response(self, response: str):
+    def _unpack_response(self, response: str): 
         """
         Parse the xml response returned by the USPS service.
 
@@ -89,9 +93,14 @@ class AddressStandardizer():
         response = xmltodict.parse(response)
         response = response["AddressValidateResponse"]["Address"]
 
-        if "Error" in response:
-            return {'error': response['error']}, 404
-
+        if 'Error' in response:
+            if 'Description' in response['Error']:
+                return {'error': response['Error']['Description']}, 404
+            if 'Return Text' in response['Error']:
+                return {'error': response['Error']['Return Text']}, 404
+            return {'error': response['Error']}, 404
+        if 'Return Text' in response:
+            return {'error': response['Return Text']}, 404
 
         suite = response["Address1"] if "Address1" in response else None
         street = response["Address2"]
