@@ -31,10 +31,14 @@ def write_addresses(args, address_list):
     :param address_list: a list of OrderedDicts, each containing one address
     that has been standardized.
     """
-    file_path = args.file.split('/')
-    file_name = file_path.pop()
-    file_name = file_name[:len(file_name)-4]
-    file_path.append(file_name + '_results.csv')
+
+    if args.output is None:
+        file_path = args.file.split('/')
+        file_name = file_path.pop()
+        file_name = file_name[:len(file_name)-4]
+        file_path.append(file_name + '_results.csv')
+    else:
+        file_path = output
 
     with open("/".join(file_path), 'w+', newline='') as file:
         writer = csv.DictWriter(file, address_list[0].keys(), delimiter=',')
