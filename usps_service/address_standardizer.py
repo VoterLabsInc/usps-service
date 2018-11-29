@@ -50,7 +50,7 @@ class AddressStandardizer():
             'zip4': zip4}
 
         url = ('https://secure.shippingapis.com/' +
-               'ShippingAPI.dll?API=Verify&XML=' + 
+               'ShippingAPI.dll?API=Verify&XML=' +
                self._build_query(address, self.user_id))
 
         response = requests.post(url).content.decode("utf-8")
@@ -80,7 +80,7 @@ class AddressStandardizer():
 
         return query
 
-    def _unpack_response(self, response: str): 
+    def _unpack_response(self, response: str):
         """
         Parse the xml response returned by the USPS service.
 

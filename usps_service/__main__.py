@@ -4,6 +4,7 @@ import csv
 
 from address_standardizer import AddressStandardizer
 
+
 def standardize_batch(args):
     """
     Load the data from the provided csv file, pass each address to the
@@ -14,9 +15,10 @@ def standardize_batch(args):
     write_addresses(args, address_list)
 
     sys.stdout.write("Standardization is complete. The results can be found " +
-                     "in the same directory as the input file, in a file " + 
+                     "in the same directory as the input file, in a file " +
                      "named as <input_file_name>_results.csv\n")
     return 200
+
 
 def write_addresses(args, address_list):
     """
@@ -38,6 +40,7 @@ def write_addresses(args, address_list):
         writer = csv.DictWriter(file, address_list[0].keys(), delimiter=',')
         writer.writeheader()
         writer.writerows(address_list)
+
 
 def standardize_addresses(args, address_list):
     """
@@ -79,10 +82,12 @@ def standardize_addresses(args, address_list):
         else:
             address["error"] = result[error]
 
-        sys.stdout.write(f'''\r{str(i+1)} of {str(len(address_list))} complete''')
+        status = f'''\r{str(i+1)} of {str(len(address_list))} complete'''
+        sys.stdout.write(status)
 
     sys.stdout.write("\n")
     return address_list
+
 
 def load_addresses(args):
     """
@@ -106,41 +111,62 @@ def load_addresses(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description='call on the usps-service to assist with address handling'
-        )
-    parser.add_argument('id',
-        help='a USPS issued ID code')
+    description = ("Call on the usps-service to assist with address " +
+                   "handling. Accepts a csv file containing a list of " +
+                   "street addresses, and outputs a new file with the input" +
+                   " and the results given back from USPS.\n\n" +
+                   "The input csv should be formatted with column headers " + 
+                   "on the first line followed by one address on each line" +
+                   "after that. The key parts of an address (street, city, " +
+                   "state, and zip code must each have a column with a " +
+                   "unique name.")
 
-    parser.add_argument('--file', '-f', '-F',
-        help='A file of addresses to standardize as a batch',
-        dest='file',
-        required=True)
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('id',
+                        help='a USPS issued ID code')
+
+    parser.add_argument('--input', '-i',
+                        help='A file of addresses to standardize as a batch',
+                        dest='file',
+                        required=True)
+    parser.add_argument('--output', '-o',
+                        help=('A file path to the file that will contain ' +
+                              'the results. Default is the same the same ' +
+                              'directory as the input where the name is ' +
+                              '<input_file_name>_results.csv'),
+                        dest='output',
+                        required=False)
     parser.add_argument('--streetColumn', '--street',
-        help='The header title of the column holding the street address',
-        dest='street',
-        required=True)
+                        help=('The header title of the column holding the ' +
+                              'street address'),
+                        dest='street',
+                        required=True)
     parser.add_argument('--suiteColumn', '--suite',
-        help='The header title of the column holding the suite, box, etc.',
-        dest='suite',
-        required=False)
+                        help=('The header title of the column holding the ' +
+                              'suite, box, or unit'),
+                        dest='suite',
+                        required=False)
     parser.add_argument('--cityColumn', '--city',
-        help='The header title of the column holding the city name',
-        dest='city',
-        required=True)
+                        help=('The header title of the column holding the ' +
+                              'city'),
+                        dest='city',
+                        required=True)
     parser.add_argument('--stateColumn', '--state',
-        help='The header title of the column holding the state abreviation',
-        dest='state',
-        required=True)
+                        help=('The header title of the column holding the ' +
+                              'state'),
+                        dest='state',
+                        required=True)
     parser.add_argument('--zip5Column', '--zip5',
-        help='The header title of the column holding the zip5',
-        dest='zip5',
-        required=True)
+                        help=('The header title of the column holding the ' +
+                              'five-digit zip code'),
+                        dest='zip5',
+                        required=True)
     parser.add_argument('--zip4Column', '--zip4',
-        help='The header title of the column holding the zip4',
-        dest='zip4',
-        required=False)
+                        help=('The header title of the column holding the ' +
+                              'four-digit zip code extension'),
+                        dest='zip4',
+                        required=False)
 
     args = parser.parse_args()
-    
+
     standardize_batch(args)
