@@ -47,10 +47,10 @@ class AddressStandardizer():
             'city': city,
             'state': state,
             'zip5': zip5,
-            'zip4': zip4 }
+            'zip4': zip4}
 
         url = ('https://secure.shippingapis.com/' +
-               'ShippingAPI.dll?API=Verify&XML=' + 
+               'ShippingAPI.dll?API=Verify&XML=' +
                self._build_query(address, self.user_id))
 
         response = requests.post(url).content.decode("utf-8")
@@ -100,7 +100,6 @@ class AddressStandardizer():
                 return {'error': response['Error']['Return Text']}, 404
             return {'error': response['Error']}, 404
 
-
         suite = response["Address1"] if "Address1" in response else None
         street = response["Address2"]
         city = response["City"]
@@ -114,7 +113,7 @@ class AddressStandardizer():
             'city': response['City'],
             'state': response['State'],
             'zip5': response['Zip5'],
-            'zip4': response['Zip4'] }, 200
+            'zip4': response['Zip4']}, 200
 
     def __init__(self, user_id: str):
         """
