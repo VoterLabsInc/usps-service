@@ -115,7 +115,7 @@ if __name__ == "__main__":
                    "handling. Accepts a csv file containing a list of " +
                    "street addresses, and outputs a new file with the input" +
                    " and the results given back from USPS.\n\n" +
-                   "The input csv should be formatted with column headers " + 
+                   "The input csv should be formatted with column headers " +
                    "on the first line followed by one address on each line" +
                    "after that. The key parts of an address (street, city, " +
                    "state, and zip code must each have a column with a " +
