@@ -99,6 +99,8 @@ class AddressStandardizer():
             if 'Return Text' in response['Error']:
                 return {'error': response['Error']['Return Text']}, 404
             return {'error': response['Error']}, 404
+        if 'Return Text' in response:
+            return {'error': response['Return Text']}, 404
 
         suite = response["Address1"] if "Address1" in response else None
         street = response["Address2"]
