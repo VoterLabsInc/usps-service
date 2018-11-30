@@ -1,3 +1,0 @@
-[submodule "scripts/bash-utils"]
-	path = scripts/bash-utils
-	url = git@github.com:VoterLabsInc/bash-utils.git

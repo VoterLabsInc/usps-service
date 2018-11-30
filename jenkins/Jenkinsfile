@@ -10,17 +10,7 @@ pipeline {
     stage('Prebuild') {
       steps {
         checkout scm
-        // Initialize bash-utils submodule
-        withCredentials([file(credentialsId: 'read-only-bash-utils',
-                    variable: 'BASH_UTILS_KEY')]){
-          sh """
-             cat \"$BASH_UTILS_KEY\" > bash_utils.key
-             chmod 0600 bash_utils.key
-             ssh-agent bash -c \
-             'ssh-add bash_utils.key; \
-              git submodule update --init --recursive scripts/bash-utils'
-             """
-          }
+        
         // create python virtualenv or use a python docker container
         sh """
            bash jenkins/prebuild.sh
@@ -43,7 +33,7 @@ pipeline {
       script {
         def BLAME = sh (
           returnStdout: true,
-          script: 'bash scripts/bash-utils/blame.sh'
+          script: 'bash jenkins/blame.sh'
         )
         slackSend(color: '#FF0000',
               channel: 'jenkins',
@@ -55,7 +45,7 @@ pipeline {
       script {
         def BLAME = sh (
           returnStdout: true,
-          script: 'bash scripts/bash-utils/blame.sh'
+          script: 'bash jenkins/blame.sh'
         )
         slackSend(color: '#00FF00',
               channel: 'jenkins',
